@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>BMI Calculator</title>
+<style>
+    * { box-sizing: border-box; }
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+        margin: 20px;
+        color: #222;
+    }
+    .header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+    }
+    h1 { margin: 0 0 10px 0; font-size: 28px; }
+    a.print-link { color: #2a6ebb; text-decoration: underline; font-size: 14px; }
+
+    .banner {
+        background: #2f6ca2;
+        color: #fff;
+        padding: 10px 16px;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 10px 0 16px 0;
+    }
+    .banner .circle {
+        background: #6b9bc7;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+    }
+
+    .container {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .left-panel {
+        flex: 1;
+        min-width: 320px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .tabs {
+        display: flex;
+    }
+    .tab {
+        flex: 1;
+        text-align: center;
+        padding: 10px 0;
+        cursor: pointer;
+        font-weight: bold;
+        background: #cfe0ee;
+        color: #2f6ca2;
+        border-right: 1px solid #ccc;
+    }
+    .tab.active {
+        background: #2f6ca2;
+        color: #fff;
+    }
+    .tab:last-child { border-right: none; }
+
+    .form-area {
+        padding: 16px;
+    }
+    .form-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 14px;
+        gap: 10px;
+    }
+    .form-row label {
+        width: 70px;
+        font-weight: bold;
+    }
+    .form-row input[type="number"] {
+        flex: 1;
+        padding: 8px;
+        border: 1px solid #999;
+        border-radius: 3px;
+        max-width: 200px;
+    }
+    .unit-suffix { color: #555; }
+    .hint { color: #555; font-size: 13px; margin-left: 6px; }
+
+    .radio-group label {
+        width: auto;
+        font-weight: normal;
+        margin-right: 6px;
+    }
+    .radio-group input { margin-right: 4px; }
+
+    button#calculateBtn {
+        background: #4c7a2c;
+        color: #fff;
+        border: none;
+        padding: 10px 24px;
+        font-size: 15px;
+        border-radius: 3px;
+        cursor: pointer;
+    }
+    button#clearBtn {
+        background: #ccc;
+        color: #666;
+        border: none;
+        padding: 10px 24px;
+        font-size: 15px;
+        border-radius: 3px;
+        margin-left: 10px;
+        cursor: pointer;
+    }
+
+    .right-panel {
+        flex: 1;
+        min-width: 320px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    .result-header {
+        background: #5a7d3a;
+        color: #fff;
+        padding: 10px 16px;
+        font-weight: bold;
+        font-size: 18px;
+    }
+    .result-body {
+        padding: 16px;
+    }
+    .bmi-value {
+        font-size: 18px;
+        font-weight: bold;
+    }
+    .bmi-category {
+        color: #4c7a2c;
+        font-weight: bold;
+        margin-left: 6px;
+    }
+    ul.result-list {
+        margin-top: 16px;
+        padding-left: 20px;
+        line-height: 1.8;
+    }
+    #resultPlaceholder {
+        color: #888;
+        font-style: italic;
+    }
+</style>
+</head>
+<body>
+
+<div class="header-row">
+    <h1>BMI Calculator</h1>
+    <a class="print-link" href="#" onclick="window.print(); return false;">Print</a>
+</div>
+
+<div class="banner">
+    <span class="circle">&#9660;</span>
+    <span>Modify the values and click the Calculate button to use</span>
+</div>
+
+<div class="container">
+    <div class="left-panel">
+        <div class="tabs">
+            <div class="tab" data-unit="us">US Units</div>
+            <div class="tab active" data-unit="metric">Metric Units</div>
+            <div class="tab" data-unit="other">Other Units</div>
+        </div>
+
+        <div class="form-area">
+            <div class="form-row">
+                <label for="cage">Age</label>
+                <input type="number" id="cage" value="25">
+                <span class="hint">ages: 2 - 120</span>
+            </div>
+
+            <div class="form-row">
+                <label>Gender</label>
+                <span class="radio-group">
+                    <input type="radio" id="genderMale" name="csex" value="m" checked>
+                    <label for="genderMale" style="width:auto;">Male</label>
+                    <input type="radio" id="genderFemale" name="csex" value="f" style="margin-left:16px;">
+                    <label for="genderFemale" style="width:auto;">Female</label>
+                </span>
+            </div>
+
+            <div class="form-row">
+                <label for="cheightmeter">Height</label>
+                <input type="number" id="cheightmeter" value="180">
+                <span class="unit-suffix">cm</span>
+            </div>
+
+            <div class="form-row">
+                <label for="ckg">Weight</label>
+                <input type="number" id="ckg" value="65">
+                <span class="unit-suffix">kg</span>
+            </div>
+
+            <div class="form-row" style="margin-top: 20px;">
+                <button id="calculateBtn" onclick="calculateBMI()">Calculate &#9654;</button>
+                <button id="clearBtn" onclick="clearForm()">Clear</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="right-panel">
+        <div class="result-header">Result</div>
+        <div class="result-body" id="bmiresult">
+            <div id="resultPlaceholder">กรอกข้อมูลด้านซ้ายแล้วกด Calculate เพื่อดูผลลัพธ์</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll('.tab').forEach(function (tab) {
+        tab.addEventListener('click', function () {
+            document.querySelectorAll('.tab').forEach(function (t) { t.classList.remove('active'); });
+            tab.classList.add('active');
+        });
+    });
+
+    function getCategory(bmi) {
+        if (bmi < 18.5) return "Underweight";
+        if (bmi < 25) return "Normal";
+        if (bmi < 30) return "Overweight";
+        return "Obesity";
+    }
+
+    function calculateBMI() {
+        var age = parseFloat(document.getElementById('cage').value);
+        var heightCm = parseFloat(document.getElementById('cheightmeter').value);
+        var weightKg = parseFloat(document.getElementById('ckg').value);
+
+        var resultDiv = document.getElementById('bmiresult');
+
+        if (!heightCm || !weightKg || heightCm <= 0 || weightKg <= 0) {
+            resultDiv.innerHTML = '<div style="color:#b00;">กรุณากรอก Height และ Weight ให้ถูกต้อง</div>';
+            return;
+        }
+
+        var heightM = heightCm / 100;
+        var bmi = weightKg / (heightM * heightM);
+        var bmiRounded = Math.round(bmi * 10) / 10;
+        var category = getCategory(bmi);
+
+        var minHealthy = 18.5 * heightM * heightM;
+        var maxHealthy = 25 * heightM * heightM;
+        var bmiPrime = Math.round((bmi / 25) * 100) / 100;
+        var ponderal = Math.round((weightKg / (heightM * heightM * heightM)) * 10) / 10;
+
+        resultDiv.innerHTML =
+            '<div class="bmi-value">BMI = ' + bmiRounded + ' kg/m<sup>2</sup>' +
+            '<span class="bmi-category">(' + category + ')</span></div>' +
+            '<ul class="result-list">' +
+            '<li>Healthy BMI range: 18.5 kg/m<sup>2</sup> - 25 kg/m<sup>2</sup></li>' +
+            '<li>Healthy weight for the height: ' + minHealthy.toFixed(1) + ' kg - ' + maxHealthy.toFixed(1) + ' kg</li>' +
+            '<li>BMI Prime: ' + bmiPrime + '</li>' +
+            '<li>Ponderal Index: ' + ponderal + ' kg/m<sup>3</sup></li>' +
+            '</ul>';
+    }
+
+    function clearForm() {
+        document.getElementById('cage').value = '';
+        document.getElementById('cheightmeter').value = '';
+        document.getElementById('ckg').value = '';
+        document.getElementById('bmiresult').innerHTML =
+            '<div id="resultPlaceholder">กรอกข้อมูลด้านซ้ายแล้วกด Calculate เพื่อดูผลลัพธ์</div>';
+    }
+</script>
+
+</body>
+</html>
